@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="POST">
+    <label for="city">Ciudad:</label>
+    <input type="text" id="city" name="city" required>
+    
+    <label for="user_type">Seleccionar tipo usuario:</label>
+    <select id="user_type" name="user_type" required>
+        <option value="turista">Turista</option>
+        <option value="sobrecargo">Sobrecargo</option>
+        <option value="piloto">Piloto</option>
+    </select>
+
+    <button type="submit">Consultar clima</button>
+</form>
+
+{% if error %}
+<p style="color: red;">{{ error }}</p>
+{% endif %}
+{% endblock %}
