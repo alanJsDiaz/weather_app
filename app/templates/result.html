@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Clima e información de {{ data.city }}</h2>
+
+{% if user_type == 'turista' %}
+    <p>Temperatura: {{ data.temperature }}°C</p>
+    <p>Descripción: {{ data.description }}</p>
+{% elif user_type == 'sobrecargo' %}
+    <p>Temperatura: {{ data.temperature }}°C</p>
+    <p>Humedad: {{ data.humidity }}%</p>
+    <p>Visibilidad: {{ data.visibility }} metros</p>
+{% elif user_type == 'piloto' %}
+    <p>Latitud: {{ data.lat }}</p>
+    <p>Longitud: {{ data.lon }}</p>
+    <p>Velocidad del viento: {{ data.wind_speed }} m/s</p>
+    <p>Dirección del viento: {{ data.wind_deg }}°</p>
+    <p>Presión: {{ data.pressure }} hPa</p>
+{% else %}
+    <p>Ups, parece que algo salió mal...</p>
+{% endif %}
+
+<a href="{{ url_for('main.index') }}">Consultar otra ciudad.</a>
+{% endblock %}
