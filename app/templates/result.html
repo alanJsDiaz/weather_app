@@ -2,6 +2,8 @@
 
 {% block content %}
 <h2>Clima e información de {{ data.city }}</h2>
+<body class="info-page">
+    <div class="info-box">
 
 {% if user_type == 'turista' %}
     <p>Temperatura: {{ data.temperature }}°C</p>
@@ -19,5 +21,8 @@
 {% else %}
     <p>Ups, parece que algo salió mal...</p>
 {% endif %}
+
+</div>
+
 <a href="{{ url_for('main.index') }}">Consultar otra ciudad.</a>
 {% endblock %}
