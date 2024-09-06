@@ -3,11 +3,10 @@ from time import time
 from fuzzywuzzy import process
 
 
-# Diccionario para almacenar el caché
+# Diccionario para almacenar el cache
 cache = {}
 
 def get_weather_data(city, user_type):
-
     # Lista de ciudades disponibles de acuaerdo al Csv proporcionado
     cities_available = ["Ciudad De Mexico","Toluca", "Cancun","Aguascalientes", "Guanajuato", "Chihuahua", "Cozumel", "Guadalajara", "Monterrey", "Puebla", "Puerto Vallarta", "Queretaro", "San Luis Potosi", "Torreon", "Acapulco", "Ciudad Juarez", "Ciudad del Carmen", "Chetumal", 
                         "Hermosillo", "Huatulco", "Merida", "Oaxaca","Puerto Escondido", "Tampico", "Tijuana", "Veracruz", "Zacatecas", "Ixtapa", "Zihuatanejo", "Villahermosa", "Amsterdam", "Atlanta", "Bogota", "Belice" , "Paris", "Ciudad Obregon",
@@ -16,13 +15,16 @@ def get_weather_data(city, user_type):
 
     # IATA's de las ciudades disponibles
     iatas_cities_available = {
-        "CDMX": "Ciudad De Mexico", "MTY" : "Monterrey", "QRO": "Queretaro", "CJS": "Ciudad Juarez", "HMO" : "Hermosillo", "CME":"Ciudad de Carmen", "HUX" : "Huatulco", "PVR": "Puerto Vallarta",
-        "PXM" : "Puerto Escondido", "VSA" : "Villahermosa","CUU" : "Chihuahua", "TRC" : "Torreon", "BJX":"Leon", "PBC" : "Puebla", "ZCL" : "Zacatecas", "LAX" : "Los Angeles", "JFK": "Nueva York",
-        "MZT" : "Mazatlan", "GUA" : "Ciudad de Guatemala", "DFW" : "Dallas", "ORD": "Chicago", "PHX" : "Phoenix", "PHL" : "Philadelphia", "CLT" : "Charlotte", "YYZ" : "Toronto", "IAH": "Houston", 
-        "YVR" : "Vancouver", "CDG" : "Paris", "CEN" : "Ciudad Obregon", "SCL" : "Santiago", "SLP" : "San Luis Potosi"}
+    "CDMX": "Ciudad De Mexico", "MTY": "Monterrey", "QRO": "Queretaro", "CJS": "Ciudad Juarez", "HMO": "Hermosillo", "CME": "Ciudad del Carmen", "HUX": "Huatulco", "PVR": "Puerto Vallarta",
+    "PXM": "Puerto Escondido", "VSA": "Villahermosa", "CUU": "Chihuahua", "TRC": "Torreon", "BJX": "Guanajuato", "PBC": "Puebla", "ZCL": "Zacatecas", "LAX": "Los Angeles", "JFK": "New York",
+    "MZT": "Mazatlan", "GUA": "Ciudad de Guatemala", "DFW": "Dallas", "ORD": "Chicago", "PHX": "Phoenix", "PHL": "Philadelphia", "CLT": "Charlotte", "YYZ": "Toronto", "IAH": "Houston", 
+    "YVR": "Vancouver", "CDG": "Paris", "CEN": "Ciudad Obregon", "SCL": "Santiago", "SLP": "San Luis Potosi", "TLC": "Toluca", "CUN": "Cancun", "AGU": "Aguascalientes", "CZM": "Cozumel", 
+    "GDL": "Guadalajara", "PBC": "Puebla", "ACA": "Acapulco", "CUN": "Cancun", "CZM": "Cozumel", "MID": "Merida", "OAX": "Oaxaca", "TAM": "Tampico", "TIJ": "Tijuana", "VER": "Veracruz",
+    "ZIH": "Zihuatanejo", "IXT": "Ixtapa", "AMS": "Amsterdam", "ATL": "Atlanta", "BOG": "Bogota", "BZE": "Belice", "HAV": "Havana", "LIM": "Lima", "MAD": "Madrid", "MIA": "Miami", "AMS": "Amsterdam",
+    "DFW": "Dallas", "SJD": "San José del Cabo"}
 
     # Procesamos la IATA ingresada por el usuario, asignandole la ciudad de la IATA, si no se ingresa una IATA e asigna la ciudad original ingresada por el usuario, tambien le quitamos los espacios preceden y proceden de la ciudad
-    city = city.strip()
+    city = city.strip().upper()
     city = iatas_cities_available.get(city, city)
 
     # Procesamos la ciudad ingresada por el usuario, asignandole la ciudad más parecida de la lista de ciudades disponibles
@@ -35,13 +37,13 @@ def get_weather_data(city, user_type):
 
     cache_key = (city_well_written[0], user_type)  
     
-    # Verifica si la clave ya está en caché y no ha expirado
+    # Verifica si la clave ya esta en cache y no ha expirado
     if cache_key in cache:
         cached_data, timestamp = cache[cache_key]
         if time() - timestamp < 600:
             return cached_data
 
-    # Si no está en caché o ha expirado, hacer una solicitud a la API
+    # Si no esta en cache o ha expirado, hacer una solicitud a la API
     api_key = 'cfb729fa224a70bb905e7e69682df89d'
     url = f'http://api.openweathermap.org/data/2.5/weather?q={city_well_written[0]}&appid={api_key}&units=metric'
     response = requests.get(url)
@@ -54,7 +56,7 @@ def get_weather_data(city, user_type):
 
     data = response.json()
 
-    # Procesar los datos según el tipo de usuario
+    # Procesar los datos segun el tipo de usuario
     if user_type == 'turista':
         result = {
             'city': data['name'],
@@ -80,7 +82,7 @@ def get_weather_data(city, user_type):
     else:
         return {'error': 'Tipo de usuario invalido.'}
     
-    # Almacenar los datos en caché junto con un timestamp
+    # Almacenar los datos en cache junto con un timestamp
     cache[cache_key] = (result, time())
 
     return result
