@@ -1,6 +1,6 @@
-# Nombre del Proyecto
+# Sitio web de clima en tiempo real
 
-Breve descripción de lo que hace tu proyecto. Explica el propósito del programa y en qué consiste su funcionalidad principal.
+Este proyecto es un sitio web que consulta en tiempo real el clima y otros datos geográficos de la ciudad de interés del usuario, además puede consultar información acerca de los vuelos relacionados a esta ciudad, es un proyecto pensando para usarse en un aeropuerto.
 
 ## Requisitos
 
