@@ -8,16 +8,46 @@
 {% if user_type == 'turista' %}
     <p>Temperatura: {{ data.temperature }}°C</p>
     <p>Descripción: {{ data.description }}</p>
+    <p>Vuelos disponibles:</p>
+{% if data.vuelos %}
+    <ul>
+    {% for vuelo in data.vuelos %}
+        <li>Origen: {{ vuelo.origin }} - Destino: {{ vuelo.destination }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No hay vuelos disponibles.</p>
+{% endif %} 
 {% elif user_type == 'sobrecargo' %}
     <p>Temperatura: {{ data.temperature }}°C</p>
     <p>Humedad: {{ data.humidity }}%</p>
     <p>Visibilidad: {{ data.visibility }} metros</p>
+    <p>Vuelos disponibles:</p>
+{% if data.vuelos %}
+    <ul>
+    {% for vuelo in data.vuelos %}
+        <li>Origen: {{ vuelo.origin }} - Destino: {{ vuelo.destination }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No hay vuelos disponibles.</p>
+{% endif %} 
 {% elif user_type == 'piloto' %}
     <p>Latitud: {{ data.lat }}</p>
     <p>Longitud: {{ data.lon }}</p>
     <p>Velocidad del viento: {{ data.wind_speed }} m/s</p>
     <p>Dirección del viento: {{ data.wind_deg }}°</p>
     <p>Presión: {{ data.pressure }} hPa</p>
+    <p>Vuelos disponibles:</p>
+{% if data.vuelos %}
+    <ul>
+    {% for vuelo in data.vuelos %}
+        <li>Origen: {{ vuelo.origin }} - Destino: {{ vuelo.destination }} - Latitud de Origen: {{ vuelo.origin_latitude }} - Longitud de Origen: {{ vuelo.origin_longitude }} - Latitud de Destino: {{ vuelo.destination_latitude }} - Longitud de Destino: {{ vuelo.destination_longitude }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No hay vuelos disponibles.</p>
+{% endif %} 
 {% else %}
     <p>Ups, parece que algo salió mal...</p>
 {% endif %}

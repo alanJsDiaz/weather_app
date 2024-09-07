@@ -1,10 +1,14 @@
 import requests
+import pandas as pd
 from time import time
 from fuzzywuzzy import process
 
 
 # Diccionario para almacenar el cache
 cache = {}
+
+# Cargamos el SCV con los vuelos disponibles
+df = pd.read_csv('https://drive.google.com/uc?export=download&id=1KKdwtHivzRocsj1-fXzQtEjMB12C-6cu')
 
 def get_weather_data(city, user_type):
     # Lista de ciudades disponibles de acuaerdo al Csv proporcionado
@@ -21,14 +25,19 @@ def get_weather_data(city, user_type):
     "YVR": "Vancouver", "CDG": "Paris", "CEN": "Ciudad Obregon", "SCL": "Santiago", "SLP": "San Luis Potosi", "TLC": "Toluca", "CUN": "Cancun", "AGU": "Aguascalientes", "CZM": "Cozumel", 
     "GDL": "Guadalajara", "PBC": "Puebla", "ACA": "Acapulco", "CUN": "Cancun", "CZM": "Cozumel", "MID": "Merida", "OAX": "Oaxaca", "TAM": "Tampico", "TIJ": "Tijuana", "VER": "Veracruz",
     "ZIH": "Zihuatanejo", "IXT": "Ixtapa", "AMS": "Amsterdam", "ATL": "Atlanta", "BOG": "Bogota", "BZE": "Belice", "HAV": "Havana", "LIM": "Lima", "MAD": "Madrid", "MIA": "Miami", "AMS": "Amsterdam",
-    "DFW": "Dallas", "SJD": "San José del Cabo"}
-
+    "DFW": "Dallas", "SJD": "San José del Cabo", "MEX": "Ciudad De Mexico"}
     # Procesamos la IATA ingresada por el usuario, asignandole la ciudad de la IATA, si no se ingresa una IATA e asigna la ciudad original ingresada por el usuario, tambien le quitamos los espacios preceden y proceden de la ciudad
     city = city.strip().upper()
     city = iatas_cities_available.get(city, city)
 
     # Procesamos la ciudad ingresada por el usuario, asignandole la ciudad más parecida de la lista de ciudades disponibles
     city_well_written = process.extractOne(city, cities_available)
+
+    #Obtenemos la IATA independientemente de si se ingreso la ciudad o la IATA
+    iata = [i for i in iatas_cities_available if iatas_cities_available[i] == city_well_written[0]]
+    
+    # Obtenemos los vuelos disponibles de la ciudad ingresada por el usuario
+    vuelos_disponibles = df[df["origin"].isin(iata)]
 
     # Si la similitud de la ciudad ingresada por el usuario con la ciudad más parecida de la lista de ciudades disponibles es menor a 64, se asigna el nombre original para que arroge que no existe esa ciudad
     if city_well_written[1] < 64:   
@@ -55,6 +64,8 @@ def get_weather_data(city, user_type):
         return {'error': 'No se pudieron recuperar los datos'}
 
     data = response.json()
+    
+
 
     # Procesar los datos segun el tipo de usuario
     if user_type == 'turista':
@@ -62,6 +73,7 @@ def get_weather_data(city, user_type):
             'city': data['name'],
             'temperature': data['main']['temp'],
             'description': data['weather'][0]['description'],
+            'vuelos': vuelos_disponibles.to_dict(orient='records')
         }
     elif user_type == 'sobrecargo':
         result = {
@@ -69,6 +81,7 @@ def get_weather_data(city, user_type):
             'temperature': data['main']['temp'],
             'humidity': data['main']['humidity'],
             'visibility': data.get('visibility', 'N/A'),
+            'vuelos': vuelos_disponibles.to_dict(orient='records')
         }
     elif user_type == 'piloto':
         result = {
@@ -78,6 +91,7 @@ def get_weather_data(city, user_type):
             'wind_speed': data['wind']['speed'],
             'wind_deg': data['wind']['deg'],
             'pressure': data['main']['pressure'],
+            'vuelos': vuelos_disponibles.to_dict(orient='records')
         }
     else:
         return {'error': 'Tipo de usuario invalido.'}
