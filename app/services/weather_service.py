@@ -1,102 +1,95 @@
 import requests
-import pandas as pd
 from time import time
-from fuzzywuzzy import process
+from app.services.Robust_Entry import RobustEntry
+from app.services.Available_Flights import Flights
+
+class WeatherService:
+    def __init__(self):
+        """
+        Inicializa el objeto WeatherService.
+        """
+        self.cache = {}
 
 
-# Diccionario para almacenar el cache
-cache = {}
 
-# Cargamos el SCV con los vuelos disponibles
-df = pd.read_csv('https://drive.google.com/uc?export=download&id=1KKdwtHivzRocsj1-fXzQtEjMB12C-6cu')
-
-def get_weather_data(city, user_type):
-    # Lista de ciudades disponibles de acuaerdo al Csv proporcionado
-    cities_available = ["Ciudad De Mexico","Toluca", "Cancun","Aguascalientes", "Guanajuato", "Chihuahua", "Cozumel", "Guadalajara", "Monterrey", "Puebla", "Puerto Vallarta", "Queretaro", "San Luis Potosi", "Torreon", "Acapulco", "Ciudad Juarez", "Ciudad del Carmen", "Chetumal", 
-                        "Hermosillo", "Huatulco", "Merida", "Oaxaca","Puerto Escondido", "Tampico", "Tijuana", "Veracruz", "Zacatecas", "Ixtapa", "Zihuatanejo", "Villahermosa", "Amsterdam", "Atlanta", "Bogota", "Belice" , "Paris", "Ciudad Obregon",
-                        "Charlotte", "Dalas", "Fort Worth", "Ciudad de Guatemala", "Havana", "Houston", "New York", "Los Angeles", "Lima", "Madrid", "Miami", "Mazatlan", "Philadelphia", "Phoenix", "Santiago", "Vancouver", "Toronto"]
+    def get_weather_data(self, city, user_type):
+        """
+        Recupera los datos climáticos para una ciudad y tipo de usuario dados.
+        Args:
+            city (str): El nombre de la ciudad.
+            user_type (str): El tipo de usuario.
+        Returns:
+            dict: Un diccionario que contiene los datos climáticos para la ciudad.         """
+        city_well_written = RobustEntry(city).get_city_well_written()
+        if city_well_written == 'error':
+            return {'error': 'La ciudad no existe y/o no se encuentra disponible, intenta con otro nombre.'}
+        iata = RobustEntry(city_well_written).get_iata()
+        cache_key = (city_well_written, user_type)
+        if cache_key in self.cache:
+            cached_data, timestamp = self.cache[cache_key]
+            if time() - timestamp < 600:
+                return cached_data
+        api_key = 'cfb729fa224a70bb905e7e69682df89d'
+        url = f'http://api.openweathermap.org/data/2.5/weather?q={city_well_written}&appid={api_key}&units=metric'
+        response = requests.get(url)
+        if response.status_code == 404:
+            return {'error': f"La ciudad '{city_well_written}' no existe. Por favor, verifica el nombre e inténtalo de nuevo."}
+        elif response.status_code != 200:
+            return {'error': 'No se pudieron recuperar los datos'}
+        avalaible_flights = Flights().get_available_flights_by_origin(iata)
+        data = response.json()
+        result = self.create_weather_data(data, avalaible_flights, user_type)
+        self.cache[cache_key] = (result, time())
+        return result
     
-
-    # IATA's de las ciudades disponibles
-    iatas_cities_available = {
-    "CDMX": "Ciudad De Mexico", "MTY": "Monterrey", "QRO": "Queretaro", "CJS": "Ciudad Juarez", "HMO": "Hermosillo", "CME": "Ciudad del Carmen", "HUX": "Huatulco", "PVR": "Puerto Vallarta",
-    "PXM": "Puerto Escondido", "VSA": "Villahermosa", "CUU": "Chihuahua", "TRC": "Torreon", "BJX": "Guanajuato", "PBC": "Puebla", "ZCL": "Zacatecas", "LAX": "Los Angeles", "JFK": "New York",
-    "MZT": "Mazatlan", "GUA": "Ciudad de Guatemala", "DFW": "Dallas", "ORD": "Chicago", "PHX": "Phoenix", "PHL": "Philadelphia", "CLT": "Charlotte", "YYZ": "Toronto", "IAH": "Houston", 
-    "YVR": "Vancouver", "CDG": "Paris", "CEN": "Ciudad Obregon", "SCL": "Santiago", "SLP": "San Luis Potosi", "TLC": "Toluca", "CUN": "Cancun", "AGU": "Aguascalientes", "CZM": "Cozumel", 
-    "GDL": "Guadalajara", "PBC": "Puebla", "ACA": "Acapulco", "CUN": "Cancun", "CZM": "Cozumel", "MID": "Merida", "OAX": "Oaxaca", "TAM": "Tampico", "TIJ": "Tijuana", "VER": "Veracruz",
-    "ZIH": "Zihuatanejo", "IXT": "Ixtapa", "AMS": "Amsterdam", "ATL": "Atlanta", "BOG": "Bogota", "BZE": "Belice", "HAV": "Havana", "LIM": "Lima", "MAD": "Madrid", "MIA": "Miami", "AMS": "Amsterdam",
-    "DFW": "Dallas", "SJD": "San José del Cabo", "MEX": "Ciudad De Mexico"}
-    # Procesamos la IATA ingresada por el usuario, asignandole la ciudad de la IATA, si no se ingresa una IATA e asigna la ciudad original ingresada por el usuario, tambien le quitamos los espacios preceden y proceden de la ciudad
-    city = city.strip().upper()
-    city = iatas_cities_available.get(city, city)
-
-    # Procesamos la ciudad ingresada por el usuario, asignandole la ciudad más parecida de la lista de ciudades disponibles
-    city_well_written = process.extractOne(city, cities_available)
-
-    #Obtenemos la IATA independientemente de si se ingreso la ciudad o la IATA
-    iata = [i for i in iatas_cities_available if iatas_cities_available[i] == city_well_written[0]]
     
-    # Obtenemos los vuelos disponibles de la ciudad ingresada por el usuario
-    vuelos_disponibles = df[df["origin"].isin(iata)]
-
-    # Si la similitud de la ciudad ingresada por el usuario con la ciudad más parecida de la lista de ciudades disponibles es menor a 64, se asigna el nombre original para que arroge que no existe esa ciudad
-    if city_well_written[1] < 64:   
-        city_well_written = city
-
-
-    cache_key = (city_well_written[0], user_type)  
     
-    # Verifica si la clave ya esta en cache y no ha expirado
-    if cache_key in cache:
-        cached_data, timestamp = cache[cache_key]
-        if time() - timestamp < 600:
-            return cached_data
+    def create_weather_data(self, data, avalaible_flights, user_type):
+        '''Crea datos meteorológicos basados en el tipo de usuario.
+        Args:
+        - data: Los datos meteorológicos.
+        - avalaible_flights: Los vuelos disponibles.
+        - user_type: El tipo de usuario.
+        Return:
+        - Si el tipo de usuario es 'turista', retorna una instancia de TuristaWeatherData.
+        - Si el tipo de usuario es 'sobrecargo', retorna una instancia de SobrecargoWeatherData.
+        - Si el tipo de usuario es 'piloto', retorna una instancia de PilotoWeatherData.
+        - Si el tipo de usuario es inválido, retorna un diccionario con un mensaje de error.
+        '''
+        if user_type == 'turista':
+            return TuristaWeatherData(data, avalaible_flights)
+        elif user_type == 'sobrecargo':
+            return SobrecargoWeatherData(data, avalaible_flights)
+        elif user_type == 'piloto':
+            return PilotoWeatherData(data, avalaible_flights)
+        else:
+            return {'error': 'Tipo de usuario invalido.'}
 
-    # Si no esta en cache o ha expirado, hacer una solicitud a la API
-    api_key = 'cfb729fa224a70bb905e7e69682df89d'
-    url = f'http://api.openweathermap.org/data/2.5/weather?q={city_well_written[0]}&appid={api_key}&units=metric'
-    response = requests.get(url)
-    
-    # Manejo de errores de respuesta de la API
-    if response.status_code == 404:
-        return {'error': f"La ciudad '{city}' no existe. Por favor, verifica el nombre e inténtalo de nuevo."}
-    elif response.status_code != 200:
-        return {'error': 'No se pudieron recuperar los datos'}
 
-    data = response.json()
-    
+class WeatherData:
+    def __init__(self, data, avalaible_flights):
+        self.city = data['name']
+        self.temperature = data['main']['temp']
+        self.flights = avalaible_flights  
 
 
-    # Procesar los datos segun el tipo de usuario
-    if user_type == 'turista':
-        result = {
-            'city': data['name'],
-            'temperature': data['main']['temp'],
-            'description': data['weather'][0]['description'],
-            'vuelos': vuelos_disponibles.to_dict(orient='records')
-        }
-    elif user_type == 'sobrecargo':
-        result = {
-            'city': data['name'],
-            'temperature': data['main']['temp'],
-            'humidity': data['main']['humidity'],
-            'visibility': data.get('visibility', 'N/A'),
-            'vuelos': vuelos_disponibles.to_dict(orient='records')
-        }
-    elif user_type == 'piloto':
-        result = {
-            'city': data['name'],
-            'lat': data['coord']['lat'],
-            'lon': data['coord']['lon'],
-            'wind_speed': data['wind']['speed'],
-            'wind_deg': data['wind']['deg'],
-            'pressure': data['main']['pressure'],
-            'vuelos': vuelos_disponibles.to_dict(orient='records')
-        }
-    else:
-        return {'error': 'Tipo de usuario invalido.'}
-    
-    # Almacenar los datos en cache junto con un timestamp
-    cache[cache_key] = (result, time())
+class TuristaWeatherData(WeatherData):
+    def __init__(self, data, avalaible_flights):
+        super().__init__(data, avalaible_flights)
+        self.description = data['weather'][0]['description']
 
-    return result
+
+class SobrecargoWeatherData(WeatherData):
+    def __init__(self, data, avalaible_flights):
+        super().__init__(data, avalaible_flights)
+        self.humidity = data['main']['humidity']
+
+
+class PilotoWeatherData(WeatherData):
+    def __init__(self, data, avalaible_flights):
+        super().__init__(data, avalaible_flights)
+        self.lat = data['coord']['lat']
+        self.lon = data['coord']['lon']
+        self.wind_speed = data['wind']['speed']
+        self.wind_deg = data['wind']['deg']
+        self.pressure = data['main']['pressure']
