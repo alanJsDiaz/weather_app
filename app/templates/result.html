@@ -5,6 +5,12 @@
 <body class="info-page">
     <div class="info-box">
 
+    {% if origin and destination %}
+    <h3>Información del vuelo</h3>
+    <p>Origen: {{ origin }}</p>
+    <p>Destino: {{ destination }}</p>
+    {% endif %}
+
     {% if user_type == 'turista' %}
         <p>Temperatura: {{ data.temperature }}°C</p>
         <p>Descripción: {{ data.description }}</p>
@@ -13,6 +19,7 @@
         <p>Humedad: {{ data.humidity }}%</p>
         <p>Visibilidad: {{ data.visibility }} metros</p>
     {% elif user_type == 'piloto' %}
+        <p>Temperatura: {{ data.temperature }}°C</p>
         <p>Latitud: {{ data.lat }}</p>
         <p>Longitud: {{ data.lon }}</p>
         <p>Velocidad del viento: {{ data.wind_speed }} m/s</p>
@@ -24,14 +31,13 @@
 
     </div>
 
-    <!-- Botón para consultar otra ciudad -->
     <div class="button-container">
         <a href="{{ url_for('main.index') }}">
             <button class="small-button">Consultar otra ciudad</button>
         </a>
     </div>
 
-    <!-- Nuevo botón para consultar otra ciudad por Ticket -->
+
     <div class="button-container">
         <a href="{{ url_for('main.consultar_por_ticket') }}">
             <button class="small-button">Consultar otra ciudad por Ticket</button>

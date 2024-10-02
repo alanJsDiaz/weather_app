@@ -20,7 +20,7 @@ class WeatherService:
        """
        try:
            with open('api_key.txt', 'r') as file:
-               api_key = file.read().strip()  # Lee y elimina los espacios en blanco alrededor
+               api_key = file.read().strip() 
                return api_key
        except FileNotFoundError:
            raise Exception("El archivo 'api_key.txt' no fue encontrado. Asegúrate de que existe y contiene la clave API.")
@@ -41,16 +41,13 @@ class WeatherService:
         """
         city_well_written = RobustEntry(city).get_city_well_written()
         
-        # Verifica si 'city_well_written' devuelve una sugerencia o error antes de continuar
         if 'error' in city_well_written:
             return {'error': city_well_written['error']}
         elif 'suggestion' in city_well_written:
             return {'error': city_well_written['message']}
         
-        # Si la ciudad es válida, extrae el valor de 'city'
         city_well_written = city_well_written['city']
 
-        # Ahora se puede continuar con la consulta
         iata = RobustEntry(city_well_written).get_iata()
 
         cache_key = (city_well_written, user_type)
@@ -59,7 +56,6 @@ class WeatherService:
             if time() - timestamp < 600:
                 return cached_data
 
-        # Consulta la API del clima
         url = f'http://api.openweathermap.org/data/2.5/weather?q={city_well_written}&appid={self.api_key}&units=metric'
         response = requests.get(url)
 
