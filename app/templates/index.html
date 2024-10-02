@@ -18,4 +18,29 @@
 {% if error %}
 <p style="color: red;">{{ error }}</p>
 {% endif %}
+
+{% if suggestion %}
+<p style="color: blue;">{{ suggestion }}</p>
+{% endif %}
+
+<div class="ticket-section">
+    <h2 class="ticket-title">¿No conoces tu ticket?</h2>
+    
+    <p class="ticket-description">Consulta cuál es el Ticket asociado a tu vuelo dando click abajo:</p>
+    
+    <div class="button-container">
+        <!-- Botón de Generar Ticket -->
+        <a href="{{ url_for('main.ticket') }}">
+            <button class="generate-ticket-button">Generar un ticket</button>
+        </a>
+    </div>
+
+    <div class="button-container">
+        <!-- Botón de Consultar por Ticket -->
+        <a href="{{ url_for('main.consultar_por_ticket') }}">
+            <button class="generate-ticket-button">Consultar por Ticket</button>
+        </a>
+    </div>
+</div>
+
 {% endblock %}

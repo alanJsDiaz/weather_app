@@ -23,27 +23,36 @@ class RobustEntry:
 
     def get_city_well_written(self):
         """
-        Obtiene una versión bien escrita del nombre de la ciudad.
+        Obtiene una versión bien escrita del nombre de la ciudad o sugiere una ciudad si la similitud es alta.
         Retorna:
-            str: La versión bien escrita del nombre de la ciudad.
+            dict: Un diccionario con la ciudad bien escrita o una sugerencia.
         """
-        city_aux = self.city
-        self.city = self.iatas_cities_available.get(self.city, self.city)
-        if self.city != city_aux:
-            return self.city
+        # Primero verifica si el usuario ingresó un IATA válido
+        if self.city in self.iatas_cities_available:
+            return {'city': self.iatas_cities_available[self.city]}  # Se encontró la ciudad por IATA
+        
         best_match = None
         highest_ratio = 0
-        threshold = 0.7  
+        threshold = 0.7  # Umbral de similitud
+
+        # Busca la mejor coincidencia de la ciudad en las ciudades disponibles
         for available_city in self.cities_available:
             current_ratio = ratio(self.city, available_city.upper())
             if current_ratio > highest_ratio:
                 highest_ratio = current_ratio
                 best_match = available_city
-        if highest_ratio < threshold:
-            return 'error'
+
+        # Si la similitud es suficientemente alta, sugiere la ciudad
+        if highest_ratio > threshold and highest_ratio < 1.0:
+            return {
+                'suggestion': best_match,
+                'message': f"La ciudad '{self.city}' no fue encontrada, ¿quisiste decir '{best_match}'?"
+            }
+        elif highest_ratio == 1.0:
+            return {'city': best_match}  # La ciudad coincide perfectamente
         else:
-            self.city = best_match
-            return best_match
+            return {'error': 'La ciudad no existe y/o no se encuentra disponible, intenta con otro nombre.'}
+
 
 
 
