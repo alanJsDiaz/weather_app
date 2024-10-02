@@ -27,29 +27,26 @@ class RobustEntry:
         Retorna:
             dict: Un diccionario con la ciudad bien escrita o una sugerencia.
         """
-        # Primero verifica si el usuario ingresó un IATA válido
         if self.city in self.iatas_cities_available:
-            return {'city': self.iatas_cities_available[self.city]}  # Se encontró la ciudad por IATA
+            return {'city': self.iatas_cities_available[self.city]} 
         
         best_match = None
         highest_ratio = 0
-        threshold = 0.7  # Umbral de similitud
+        threshold = 0.7  
 
-        # Busca la mejor coincidencia de la ciudad en las ciudades disponibles
         for available_city in self.cities_available:
             current_ratio = ratio(self.city, available_city.upper())
             if current_ratio > highest_ratio:
                 highest_ratio = current_ratio
                 best_match = available_city
 
-        # Si la similitud es suficientemente alta, sugiere la ciudad
         if highest_ratio > threshold and highest_ratio < 1.0:
             return {
                 'suggestion': best_match,
                 'message': f"La ciudad '{self.city}' no fue encontrada, ¿quisiste decir '{best_match}'?"
             }
         elif highest_ratio == 1.0:
-            return {'city': best_match}  # La ciudad coincide perfectamente
+            return {'city': best_match}  
         else:
             return {'error': 'La ciudad no existe y/o no se encuentra disponible, intenta con otro nombre.'}
 

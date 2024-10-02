@@ -4,7 +4,6 @@ from .routes import main
 def create_app():
     app = Flask(__name__)
 
-    # Registrar Blueprints
     app.register_blueprint(main)
 
     return app

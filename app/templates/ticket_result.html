@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 
 {% block content %}
@@ -12,12 +11,10 @@
     {% endif %}
 
     <div class="buttons">
-        <!-- Botón para generar otro ticket -->
         <a href="{{ url_for('main.ticket') }}">
             <button>Generar otro ticket</button>
         </a>
 
-        <!-- Botón para regresar al sitio principal -->
         <a href="{{ url_for('main.index') }}">
             <button>Consultar el clima</button>
         </a>
