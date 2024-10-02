@@ -24,3 +24,9 @@ Para correr el programa, ejecuta el siguiente comando en la terminal desde la ra
 >   python run.py
 
 copia  "url" que se muestra en la terminal , justo despues de haber ejecutado el comando anterior y pegala en tu navegador.
+
+## Extras
+
+1. Contraseñas de los roles 'Sobrecargo' y 'Piloto'
+>   Para 'Sobrecargo' usa la contraseña: sobrecargo123
+>   Para 'Piloto' usa la contraseña: piloto123

@@ -8,3 +8,5 @@
 /dataSources.local.xml
 __pycache__/
 *.pyc
+passwords.txt
+api_key.txt
