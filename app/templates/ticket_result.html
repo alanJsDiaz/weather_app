@@ -1,0 +1,26 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="ticket-result">
+    <h2 class="ticket-title">Ticket Generado</h2>
+
+    {% if ticket %}
+        <p class="ticket-code">Tu ticket generado es: <strong>{{ ticket }}</strong></p>
+    {% else %}
+        <p>Lo sentimos, no se pudo generar el ticket.</p>
+    {% endif %}
+
+    <div class="buttons">
+        <!-- Botón para generar otro ticket -->
+        <a href="{{ url_for('main.ticket') }}">
+            <button>Generar otro ticket</button>
+        </a>
+
+        <!-- Botón para regresar al sitio principal -->
+        <a href="{{ url_for('main.index') }}">
+            <button>Consultar el clima</button>
+        </a>
+    </div>
+</div>
+{% endblock %}
