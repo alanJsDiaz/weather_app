@@ -4,7 +4,7 @@ Este proyecto es un sitio web que consulta en tiempo real el clima y otros datos
 
 ## Requisitos
 
-Asegúrate de tener instalado Python 3.7 o superior antes de continuar.
+Asegúrate de tener instalado Python 3.7 o superior y virtualenv antes de continuar.
 
 ## Instalación
 
@@ -14,16 +14,26 @@ Asegúrate de tener instalado Python 3.7 o superior antes de continuar.
 2. Navega al directorio del proyecto:
 >   cd weather_app
 
-3. Instala las dependencias utilizando requirements.txt:
+3. Crea el entorno virtual:
+>   python -m venv venv
+
+4. Activa el entorno virtual:
+>   source venv/bin/activate
+
+5. Instala las dependencias utilizando requirements.txt:
 >   pip install -r requirements.txt
 
 # Ejecución del Programa
 
-Para correr el programa, ejecuta el siguiente comando en la terminal desde la raíz del proyecto:
+Para correr el programa, con el entorno virtual activado, ejecuta el siguiente comando en la terminal desde la raíz del proyecto:
 
 >   python run.py
 
 copia  "url" que se muestra en la terminal , justo despues de haber ejecutado el comando anterior y pegala en tu navegador.
+
+# Ejecución de los Test's
+Para correr los tests, con el entorno virtual activado, ejecuta el siguiente comando en la terminal desde la raíz del proyecto:
+>   PYTHONPATH=./ pytest
 
 ## Extras
 

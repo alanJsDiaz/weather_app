@@ -13,6 +13,7 @@ class WeatherService:
         self.cache = {}
         self.api_key = self.load_api_key()
 
+
     def load_api_key(self):
         """
         Lee la clave API desde un archivo txt llamado 'api_key.txt'.
@@ -28,6 +29,7 @@ class WeatherService:
         except Exception as e:
             raise Exception(f"Error al leer la clave API: {str(e)}")
 
+
     def get_weather_data(self, city, user_type):
         """
         Recupera los datos climáticos para una ciudad y tipo de usuario dados.
@@ -37,26 +39,24 @@ class WeatherService:
         Returns:
             dict: Un diccionario que contiene los datos climáticos para la ciudad.
         """
-        # Paso 1: Validar la ciudad
         city_well_written, error = validate_city(city)
         if error:
             return {'error': error}
 
-        # Paso 2: Verificar si los datos están en caché
         cache_key = (city_well_written, user_type)
         if is_cached(self.cache, cache_key):
             return self.cache[cache_key][0]
 
-        # Paso 3: Obtener los datos del clima desde la API
         weather_data, error = fetch_weather_data(self.api_key, city_well_written)
         if error:
             return {'error': error}
 
-        # Paso 4: Crear y almacenar los datos en caché
         result = self.create_weather_data(weather_data, user_type)
         store_in_cache(self.cache, cache_key, result)
 
         return result
+
+
 
     def create_weather_data(self, data, user_type):
         """

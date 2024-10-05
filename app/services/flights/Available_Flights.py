@@ -6,9 +6,9 @@ class Flights:
     def __init__(self):
         """
         Inicializa el objeto Vuelos.
-        Parámetros:
+        Args:
         Ninguno
-        Retorna:
+        Returns:
         Ninguno
         """
         self.cache = {}
@@ -37,10 +37,3 @@ class Flights:
         """
         available_flights = self.df[self.df["origin"].isin(iata)].to_dict(orient='records')
         return available_flights
-
-
-
-
-
-
-
