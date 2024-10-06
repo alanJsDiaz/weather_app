@@ -95,8 +95,10 @@ def consultar_por_ticket():
         weather_data, error_message = get_weather_data_for_user(destination, user_type)
         if error_message:
             return render_template_with_error('ticket_search.html', error_message)
+        
+        recomendaciones = get_recommendations(weather_data['temperature'])
 
-        return render_template('result.html', data=weather_data, user_type=user_type, origin=origin, destination=destination)
+        return render_template('result.html', data=weather_data, user_type=user_type, origin=origin, destination=destination,recommendations=recomendaciones)
 
     return render_template('ticket_search.html')
 
