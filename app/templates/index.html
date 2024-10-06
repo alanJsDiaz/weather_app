@@ -1,52 +1,64 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<form method="POST" autocomplete="off">
-    <label for="city">Ciudad:</label>
-    <input type="text" id="city" name="city" required>
-    
-    <label for="user_type">Seleccionar tipo usuario:</label>
-    <select id="user_type" name="user_type" required onchange="togglePasswordField()">
-        <option value="turista">Turista</option>
-        <option value="sobrecargo">Sobrecargo</option>
-        <option value="piloto">Piloto</option>
-    </select>
-
-    <!-- Campo de contraseña que solo se muestra si se selecciona sobrecargo o piloto -->
-    <div id="password-field" style="display: none;">
-        <label for="password">Contraseña:</label>
-        <input type="password" id="password" name="password">
-    </div>
-
-    <button type="submit">Consultar clima</button>
-</form>
-
-{% if error %}
-<p style="color: red;">{{ error }}</p>
-{% endif %}
-
-{% if suggestion %}
-<p style="color: blue;">{{ suggestion }}</p>
-{% endif %}
-
-<div class="ticket-section">
-    <h2 class="ticket-title">¿No conoces tu ticket?</h2>
-    
-    <p class="ticket-description">Consulta cuál es el Ticket asociado a tu vuelo dando click abajo:</p>
-    
-    <div class="button-container">
-        <a href="{{ url_for('main.ticket') }}">
-            <button class="generate-ticket-button">Generar un ticket</button>
-        </a>
-    </div>
-
-    <div class="button-container">
-        <a href="{{ url_for('main.consultar_por_ticket') }}">
-            <button class="generate-ticket-button">Consultar por Ticket</button>
-        </a>
-    </div>
+<div class="overlay-text">        
+    <h1>Consulta el clima por ciudad</h1>
 </div>
+<main>
 
+    <form method="POST" autocomplete="off">
+        <h2>Ingrese los datos</h2>
+        {% if error %}
+        <div class="alert alert-danger mt-3" role="alert">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        {% if suggestion %}
+        <div class="alert alert-warning mt-3" role="alert">
+            {{ suggestion }}
+        </div>
+        {% endif %}
+
+        <label for="city">Ciudad:</label>
+        <input type="text" id="city" name="city" required>
+        
+        <label for="user_type">Seleccionar tipo usuario:</label>
+        <select id="user_type" name="user_type" required onchange="togglePasswordField()">
+            <option value="turista">Turista</option>
+            <option value="sobrecargo">Sobrecargo</option>
+            <option value="piloto">Piloto</option>
+        </select>
+
+        <!-- Campo de contraseña que solo se muestra si se selecciona sobrecargo o piloto -->
+        <div id="password-field" style="display: none;">
+            <label for="password">Contraseña:</label>
+            <div class="input-group mb-3">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Ingrese su contraseña">
+                <span class="input-group-text" id="togglePassword" style="cursor: pointer;" onclick="togglePasswordVisibility()">
+                    <i class="far fa-eye"></i>
+                </span>
+            </div>
+        </div>
+
+        <button type="submit">Consultar clima</button>
+    </form>
+
+ 
+
+    <div class="ticket-section">
+
+        <h2 class="ticket-title">¿Quieres consultar el clima con un ticket?  <a href="{{ url_for('main.consultar_por_ticket') }}">
+            Da click aquí en consultar con Ticket
+        </a></h2>
+       
+
+        <h2 class="ticket-title">¿No conoces el ticket de tu vuelo?</h2>
+        <a href="{{ url_for('main.ticket') }}">
+            <button class="generate-ticket-button">Generar Ticket</button>
+        </a> 
+    </div>
+</main>
 <!-- JavaScript para mostrar/ocultar el campo de contraseña -->
 <script>
 function togglePasswordField() {
@@ -61,5 +73,22 @@ function togglePasswordField() {
     }
 }
 </script>
+<script>
+    function togglePasswordVisibility() {
+        var passwordField = document.getElementById("password");
+        var toggleIcon = document.getElementById("togglePassword");
+    
+        // Alternar entre tipo "password" y "text"
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            toggleIcon.classList.remove("fa-eye");
+            toggleIcon.classList.add("fa-eye-slash");  // Cambiar al icono de ojo tachado
+        } else {
+            passwordField.type = "password";
+            toggleIcon.classList.remove("fa-eye-slash");
+            toggleIcon.classList.add("fa-eye");  // Cambiar al icono de ojo normal
+        }
+    }
+    </script>   
 
 {% endblock %}

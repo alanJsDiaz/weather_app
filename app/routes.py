@@ -5,6 +5,7 @@ from .services.helpers.form_helpers import get_form_data, validate_form_data, ge
 from .services.helpers.ticket_helpers import generate_ticket, save_ticket_to_csv, search_ticket_in_csv, process_ticket_entries
 from .services.helpers.template_helpers import render_template_with_error
 from .services.helpers.weather_helpers import get_weather_data_for_user
+from .services.helpers.weather_helpers import get_recommendations
 
 main = Blueprint('main', __name__)
 
@@ -47,8 +48,10 @@ def index():
         weather_data, error_message = get_weather_data_for_user(city, user_type)
         if error_message:
             return render_template_with_error('index.html', error_message)
+        
+        recomendaciones = get_recommendations(weather_data['temperature'])
 
-        return render_template('result.html', data=weather_data, user_type=user_type)
+        return render_template('result.html', data=weather_data, user_type=user_type, recommendations=recomendaciones)
 
     return render_template('index.html', error=error_message)
 
@@ -96,3 +99,6 @@ def consultar_por_ticket():
         return render_template('result.html', data=weather_data, user_type=user_type, origin=origin, destination=destination)
 
     return render_template('ticket_search.html')
+
+
+

@@ -25,11 +25,14 @@ class TuristaWeatherData(WeatherData):
     def __init__(self, data):
         super().__init__(data)
         self.description = data['weather'][0]['description']
-
+        ##Icono
+        self.icon_code = data['weather'][0]['icon']
+        self.icon_url = f"https://openweathermap.org/img/wn/{self.icon_code}@2x.png"
     def to_dict(self):
         data = super().to_dict()
         data.update({
-            'description': self.description
+            'description': self.description,
+            'icon': self.icon_url
         })
         return data
 
@@ -42,12 +45,15 @@ class SobrecargoWeatherData(WeatherData):
         super().__init__(data)
         self.humidity = data['main']['humidity']
         self.visibility = data.get('visibility', 'N/A')
+        self.icon_code = data['weather'][0]['icon']
+        self.icon_url = f"https://openweathermap.org/img/wn/{self.icon_code}@2x.png"
 
     def to_dict(self):
         data = super().to_dict()
         data.update({
             'humidity': self.humidity,
-            'visibility': self.visibility
+            'visibility': self.visibility,
+            'icon': self.icon_url 
         })
         return data
 
@@ -63,6 +69,9 @@ class PilotoWeatherData(WeatherData):
         self.wind_speed = data['wind']['speed']
         self.wind_deg = data['wind']['deg']
         self.pressure = data['main']['pressure']
+        ##Icono
+        self.icon_code = data['weather'][0]['icon']
+        self.icon_url = f"https://openweathermap.org/img/wn/{self.icon_code}@2x.png"
 
     def to_dict(self):
         data = super().to_dict()
@@ -71,6 +80,7 @@ class PilotoWeatherData(WeatherData):
             'lon': self.lon,
             'wind_speed': self.wind_speed,
             'wind_deg': self.wind_deg,
-            'pressure': self.pressure
+            'pressure': self.pressure,
+            'icon': self.icon_url  # Aquí agregas el icono
         })
         return data

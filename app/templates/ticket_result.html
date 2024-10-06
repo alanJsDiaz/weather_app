@@ -5,18 +5,18 @@
     <h2 class="ticket-title">Ticket Generado</h2>
 
     {% if ticket %}
-        <p class="ticket-code">Tu ticket generado es: <strong>{{ ticket }}</strong></p>
+        <p class="ticket-code">Tu ticket es: <strong>{{ ticket }}</strong></p>
     {% else %}
         <p>Lo sentimos, no se pudo generar el ticket.</p>
     {% endif %}
 
     <div class="buttons">
-        <a href="{{ url_for('main.ticket') }}">
-            <button>Generar otro ticket</button>
+        <a href="{{ url_for('main.index') }}">
+            <button>Menu principal</button>
         </a>
 
-        <a href="{{ url_for('main.index') }}">
-            <button>Consultar el clima</button>
+        <a href="{{ url_for('main.consultar_por_ticket') }}">
+            <button>Consular clima con ticket</button>
         </a>
     </div>
 </div>
