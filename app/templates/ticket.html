@@ -1,9 +1,27 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Generar un Ticket</h2>
+<div class="overlay-text">        
+    <h1>Generar ticket</h1>
+</div>
+<main>
+
 
 <form method="POST" autocomplete="off">
+    <h2>Ingresa los datos</h2>
+
+    {% if error %}
+    <div class="alert alert-danger mt-3" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    {% if suggestion %}
+    <div class="alert alert-warning mt-3" role="alert">
+        {{ suggestion }}
+    </div>
+    {% endif %}
+
     <label for="origin">Ciudad de origen:</label>
     <input type="text" id="origin" name="origin" required>
 
@@ -11,24 +29,21 @@
     <input type="text" id="destination" name="destination" required>
 
     <button type="submit">Generar Ticket</button>
+   
+    <div class="buttons">
+        <a href="{{ url_for('main.index') }}">
+            <button type="button">Menú principal</button>
+        </a>
+    </div>
 </form>
 
 {% if ticket %}
 <p>Tu ticket generado es: <strong>{{ ticket }}</strong></p>
 {% endif %}
 
-{% if error %}
-<p style="color: red;">{{ error }}</p>
-{% endif %}
 
-{% if suggestion %}
-<p style="color: blue;">{{ suggestion }}</p>
-{% endif %}
 
-<div class="buttons">
-    <a href="{{ url_for('main.index') }}">
-        <button>Regresar al menú principal</button>
-    </a>
-</div>
+
+</main>
 
 {% endblock %}

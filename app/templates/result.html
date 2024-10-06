@@ -1,48 +1,59 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Clima e información de {{ data.city }}</h2>
-<body class="info-page">
-    <div class="info-box">
+<div class="overlay-text">        
+    <h2>Resultados</h2>
+</div>
 
-    {% if origin and destination %}
-    <h3>Información del vuelo</h3>
-    <p>Origen: {{ origin }}</p>
-    <p>Destino: {{ destination }}</p>
-    {% endif %}
+<div class="weather-container">
+        <h3>Clima de {{ data.city }}</h3>
+        <div class="info-box">
+            <div>
+            {% if user_type == 'turista' %}
+                <p>Temperatura: {{ data.temperature }}°C</p>
+                <p>Descripción: {{ data.description }}</p>
+            {% elif user_type == 'sobrecargo' %}
+                <p>Temperatura: {{ data.temperature }}°C</p>
+                <p>Humedad: {{ data.humidity }}%</p>
+                <p>Visibilidad: {{ data.visibility }} metros</p>
+            {% elif user_type == 'piloto' %}
+                <p>Temperatura: {{ data.temperature }}°C</p>
+                <p>Latitud: {{ data.lat }}</p>
+                <p>Longitud: {{ data.lon }}</p>
+                <p>Velocidad del viento: {{ data.wind_speed }} m/s</p>
+                <p>Presión: {{ data.pressure }} hPa</p>
+            {% else %}
+                
+            {% endif %}
+            </div>
 
-    {% if user_type == 'turista' %}
-        <p>Temperatura: {{ data.temperature }}°C</p>
-        <p>Descripción: {{ data.description }}</p>
-    {% elif user_type == 'sobrecargo' %}
-        <p>Temperatura: {{ data.temperature }}°C</p>
-        <p>Humedad: {{ data.humidity }}%</p>
-        <p>Visibilidad: {{ data.visibility }} metros</p>
-    {% elif user_type == 'piloto' %}
-        <p>Temperatura: {{ data.temperature }}°C</p>
-        <p>Latitud: {{ data.lat }}</p>
-        <p>Longitud: {{ data.lon }}</p>
-        <p>Velocidad del viento: {{ data.wind_speed }} m/s</p>
-        <p>Dirección del viento: {{ data.wind_deg }}°</p>
-        <p>Presión: {{ data.pressure }} hPa</p>
-    {% else %}
-        <p>Ups, parece que algo salió mal...</p>
-    {% endif %}
+            <img src="{{data.icon}}"></p>
+        </div>
 
-    </div>
-
-    <div class="button-container">
-        <a href="{{ url_for('main.index') }}">
-            <button class="small-button">Consultar otra ciudad</button>
-        </a>
-    </div>
+</div>
 
 
-    <div class="button-container">
-        <a href="{{ url_for('main.consultar_por_ticket') }}">
-            <button class="small-button">Consultar otra ciudad por Ticket</button>
-        </a>
-    </div>
 
-</body>
+
+<div class="recommendations">
+    <h3>Recomendaciones</h3>
+    <ul>
+        {% for recommendation in recommendations %}
+            <li>{{ recommendation }}</li>
+        {% endfor %}
+    </ul>
+</div>
+
+
+
+
+<div class="buttons">
+    <a href="{{ url_for('main.index') }}">
+        <button >Menú principal</button>
+    </a>
+    <a href="{{ url_for('main.consultar_por_ticket') }}">
+        <button >Consultar otra ciudad por Ticket</button>
+    </a>
+</div>
+
 {% endblock %}
