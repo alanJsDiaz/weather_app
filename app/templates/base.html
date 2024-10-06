@@ -18,9 +18,15 @@
 -->
 <body >
     <header>
-        <b><div class="page-name">Clima En Tiempo Real</div></b>
-        <img src="static/css/images/LogoAW.jpeg" alt="Logo" class="logo">
+        <b><a href="{{ url_for('main.index') }}" class="page-name-link" aria-label="Volver al menú principal">
+            <div class="page-name">Clima En Tiempo Real</div>
+        </a>
+        </b>
+        <a href="{{ url_for('main.index') }}">
+            <img src="static/css/images/LogoAW.jpeg" alt="Logo" class="logo">
+        </a>
     </header>
+    
     <div id="loader" style="display: none;">
         <div class="spinner"></div>
     </div>
